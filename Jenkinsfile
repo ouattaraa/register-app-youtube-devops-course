@@ -141,7 +141,7 @@ pipeline {
                     </html>
                 """,
                 mimeType: 'text/html',
-                to: "amidou.ouattara.tech@gmail.com"
+                to: "amidouattara51@gmail.com"
             )
         }
     }
