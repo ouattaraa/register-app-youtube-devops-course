@@ -113,16 +113,39 @@ pipeline {
     }
 
 	   post {
-       failure {
-             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
-                      subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Failed", 
-                      mimeType: 'text/html',to: "amidou.ouattara.tech@gmail.com"
-      }
-      success {
-            emailext body: '''${SCRIPT, template="groovy-html.template"}''', 
-                     subject: "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - Successful", 
-                     mimeType: 'text/html',to: "amidou.ouattara.tech@gmail.com"
-      }      
-   }
+    always {
+        script {
+            def buildStatus = currentBuild.currentResult
+            def color = (buildStatus == 'SUCCESS') ? 'green' : (buildStatus == 'FAILURE' ? 'red' : 'orange')
+
+            emailext(
+                subject: "📌 [${env.JOB_NAME}] Build #${env.BUILD_NUMBER} - ${buildStatus}",
+                body: """
+                    <html>
+                        <body style="font-family: Arial, sans-serif; color:#333;">
+                            <h2 style="color:${color};">🔔 Build Notification</h2>
+                            <p>
+                                <b>Job:</b> ${env.JOB_NAME}<br>
+                                <b>Build Number:</b> #${env.BUILD_NUMBER}<br>
+                                <b>Status:</b> <span style="color:${color}; font-weight:bold;">${buildStatus}</span><br>
+                                <b>Duration:</b> ${currentBuild.durationString}
+                            </p>
+                            <p>
+                                👉 <a href="${env.BUILD_URL}" style="color:#1a73e8;">Cliquez ici pour voir les logs Jenkins</a>
+                            </p>
+                            <hr>
+                            <p style="font-size:12px; color:#777;">
+                                🚀 Jenkins Pipeline Notification - Envoyé automatiquement par Jenkins CI/CD
+                            </p>
+                        </body>
+                    </html>
+                """,
+                mimeType: 'text/html',
+                to: "amidou.ouattara.tech@gmail.com"
+            )
+        }
+    }
+}
+
 	
 }
