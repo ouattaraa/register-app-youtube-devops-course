@@ -1,7 +1,10 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
 	 triggers {
-        pollSCM('* * * * *')
+        //pollSCM('* * * * *')
+		
+		 // Active le déclenchement via webhook GitHub
+		 githubPush()
     }
     tools {
         jdk 'Java17'
